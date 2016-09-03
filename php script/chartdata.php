@@ -1,6 +1,6 @@
 <?php
-	$connect = mysql_connect("db.mysite.com","myusername","mypassword","mydb") or die('Could not connect: ' . mysql_error());
-	mysql_select_db("mydb", $connect);
+	$connect = mysql_connect("db.example.com","user","password","db") or die('Could not connect: ' . mysql_error());
+	mysql_select_db("db", $connect);
 
 	
 	$query = "SELECT * FROM arduino_logger ORDER BY timestamp LIMIT 100";

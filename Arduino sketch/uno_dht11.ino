@@ -1,14 +1,20 @@
 #include <SPI.h>
 #include <Ethernet.h>
-#include <dht.h>
+#include <DHT.h>
 #include <stdlib.h>
+
+#define DHTPIN 2
+#define DHTTYPE DHT11
+
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-char server[] = "mysite.com";
+char server[] = "c2-systems.com";
+static char tempstr[15];
+static char humstr[15];
+
 // Set the static IP address to use if the DHCP fails to assign
 IPAddress ip(192,168,1,11);
 EthernetClient client;
-dht DHT;
-#define DHT11_PIN 2
+DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
   Serial.begin(9600);
@@ -27,17 +33,18 @@ void loop()
   
   if (client.connect(server, 80)) {
     
-    DHT.read11(DHT11_PIN);
-    char buffr[20];
+    dtostrf(dht.readTemperature(),5, 1, tempstr);
+    dtostrf(dht.readHumidity(),5, 1, humstr);
     
     String PostData="macaddr=testaddr";
     PostData=PostData+"&temperature=";
-    PostData=PostData+dtostrf(DHT.temperature,5,1,buffr);
+    PostData=PostData+tempstr;
     PostData=PostData+"&humidity=";
-    PostData=PostData+dtostrf(DHT.humidity,5,1,buffr);
+    PostData=PostData+humstr;
+    Serial.println(PostData);
 
-    client.println("POST /arduino/index.php HTTP/1.1");
-    client.println("Host:  mysite.com");
+    client.println("POST /dhtlog/postdata.php HTTP/1.1");
+    client.println("Host:  c2-systems.com");
     client.println("User-Agent: Arduino/1.0");
     client.println("Connection: close");
     client.println("Content-Type: application/x-www-form-urlencoded;");
@@ -45,11 +52,6 @@ void loop()
     client.println(PostData.length());
     client.println();
     client.println(PostData);
-    
-    // wait
-    Serial.println("Will wait");
-    
-
   } 
   else {
     Serial.println("Client not connected - could not send data.");
@@ -57,13 +59,15 @@ void loop()
   
   // if there are incoming bytes available 
   // from the server, read them and print them:
-  if (client.available()) {
-    char c = client.read();
-    Serial.print(c);
-  }
+  //  if (client.available()) {
+  //    char c = client.read();
+  //    Serial.print(c);
+  //  }
+  
   delay(5000);
   client.flush();
   client.stop();
+  
   delay(1800000); // 30 min = 1800000 ms
     
   // if the server's disconnected, stop the client:

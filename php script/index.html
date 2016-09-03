@@ -1,12 +1,12 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <title id='Description'>Temperature and humidity log</title> 
-    <link rel="stylesheet" href="../script/jqwidgets/styles/jqx.base.css" type="text/css" />
-	<script type="text/javascript" src="../script/jquery-1.11.1.min.js"></script>
-	<script type="text/javascript" src="../script/jqwidgets/jqxcore.js"></script>
-	<script type="text/javascript" src="../script/jqwidgets/jqxchart.js"></script>	
-	<script type="text/javascript" src="../script/jqwidgets/jqxdata.js"></script>	
+    <link rel="stylesheet" href="jqx.base.css" type="text/css" />
+	<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="jqxcore.js"></script>
+	<script type="text/javascript" src="jqxchart.js"></script>	
+	<script type="text/javascript" src="jqxdata.js"></script>	
 	<script type="text/javascript">
 		$(document).ready(function () {
 			// prepare the data
@@ -69,8 +69,8 @@
 						    axisSize: 'auto',
 						    tickMarksColor: '#888888',
 						    unitInterval: 5,
-						    minValue: 10,
-						    maxValue: 30
+						    minValue: 0,
+						    maxValue: 40
 						},
 					    series: [
                             { dataField: 'temperature', displayText: 'temperature' }
@@ -94,7 +94,6 @@
 					}					
 				]
 			};
-
 			// setup the chart
 			$('#jqxChart').jqxChart(settings);
 		});
