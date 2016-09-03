@@ -7,7 +7,7 @@
 #define DHTTYPE DHT11
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-char server[] = "c2-systems.com";
+char server[] = "example.com";
 static char tempstr[15];
 static char humstr[15];
 
@@ -36,15 +36,15 @@ void loop()
     dtostrf(dht.readTemperature(),5, 1, tempstr);
     dtostrf(dht.readHumidity(),5, 1, humstr);
     
-    String PostData="macaddr=testaddr";
+    String PostData="macaddr=testaddr"; //add supersecret api key
     PostData=PostData+"&temperature=";
     PostData=PostData+tempstr;
     PostData=PostData+"&humidity=";
     PostData=PostData+humstr;
     Serial.println(PostData);
 
-    client.println("POST /dhtlog/postdata.php HTTP/1.1");
-    client.println("Host:  c2-systems.com");
+    client.println("POST /my/path/to/postdata.php HTTP/1.1");
+    client.println("Host:  example.com");
     client.println("User-Agent: Arduino/1.0");
     client.println("Connection: close");
     client.println("Content-Type: application/x-www-form-urlencoded;");
