@@ -34,12 +34,18 @@ void loop() {
     postDHTData();
   }
 
-  if( digitalRead(laserPin) ) {
-    Serial.write('s');
-    delay(100);
-    Serial.write('25511898');
-    delay(100);
-    Serial.write('CATSCAN!');
+  if( digitalRead(laserPin) == LOW) {
+    if( !laserIsBlocked ) {
+      laserIsBlocked = true;
+      Serial.write('s');
+      delay(100);
+      Serial.write('25511898');
+      delay(100);
+      Serial.write('CATSCAN!');
+      delay(800);
+    }    
+  } else {
+    laserIsBlocked = false;
   }
   
 }
