@@ -8,7 +8,7 @@
 #define DHTTYPE DHT11
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-char server[] = "xxxxxxxx.herokuapp.com";
+char server[] = "xxxxxxxxx.herokuapp.com";
 static char tempstr1[15];
 static char humstr1[15];
 static char tempstr2[15];
@@ -42,6 +42,7 @@ void loop() {
       Serial.write('25511898');
       delay(100);
       Serial.write('CATSCAN!');
+      postLaserTriggered();
       delay(800);
     }    
   } else {
@@ -73,6 +74,12 @@ void postDHTData() {
     httpPostClient(PostData2);
 }
 
+void postLaserTriggered() {
+    String PostData="macaddr=testaddr";
+    PostData=PostData+"&sensor=laser_1";
+    httpPostClient(PostData);
+}
+
 void httpPostClient(String PostData) {
 // start the Ethernet connection:
   if (Ethernet.begin(mac) == 0) {
@@ -85,7 +92,7 @@ void httpPostClient(String PostData) {
   if (client.connect(server, 80)) {
     
     client.println("POST /postdata HTTP/1.1");
-    client.println("Host:  xxxxxxxxxxx.herokuapp.com");
+    client.println("Host:  xxxxxxxxx.herokuapp.com");
     client.println("User-Agent: Arduino/1.0");
     client.println("Connection: close");
     client.println("Content-Type: application/x-www-form-urlencoded;");
