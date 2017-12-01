@@ -8,11 +8,11 @@
 #define DHTTYPE DHT11
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-char server[] = "xxxxxxxxx.herokuapp.com";
+char server[] = "xxxxx.herokuapp.com";
 static char tempstr1[15];
 static char humstr1[15];
-static char tempstr2[15];
-static char humstr2[15];
+//static char tempstr2[15];
+//static char humstr2[15];
 
 // Set the static IP address to use if the DHCP fails to assign
 IPAddress ip(192,168,1,11);
@@ -21,7 +21,7 @@ unsigned long postDHTTimer;
 int laserPin = 7;
 boolean laserIsBlocked;
 DHT dht1(DHTPIN1, DHTTYPE);
-DHT dht2(DHTPIN2, DHTTYPE);
+//DHT dht2(DHTPIN2, DHTTYPE);
 
 void setup() {
   pinMode(laserPin, INPUT);
@@ -31,6 +31,7 @@ void setup() {
 void loop() {
   
   if(millis()-postDHTTimer >= 10000UL) {
+    postDHTTimer = millis();
     postDHTData();
   }
 
@@ -63,15 +64,15 @@ void postDHTData() {
     PostData1=PostData1+humstr1;
     httpPostClient(PostData1);
 
-    dtostrf(dht2.readTemperature(),5, 1, tempstr2);
-    dtostrf(dht2.readHumidity(),5, 1, humstr2);
-    String PostData2="macaddr=testaddr";
-    PostData2=PostData2+"&sensor=DHT11_2";
-    PostData2=PostData2+"&temperature=";
-    PostData2=PostData2+tempstr2;
-    PostData2=PostData2+"&humidity=";
-    PostData2=PostData2+humstr2;
-    httpPostClient(PostData2);
+    //dtostrf(dht2.readTemperature(),5, 1, tempstr2);
+    //dtostrf(dht2.readHumidity(),5, 1, humstr2);
+    //String PostData2="macaddr=testaddr";
+    //PostData2=PostData2+"&sensor=DHT11_2";
+    //PostData2=PostData2+"&temperature=";
+    //PostData2=PostData2+tempstr2;
+    //PostData2=PostData2+"&humidity=";
+    //PostData2=PostData2+humstr2;
+    //httpPostClient(PostData2);
 }
 
 void postLaserTriggered() {
@@ -86,13 +87,13 @@ void httpPostClient(String PostData) {
     // try to congifure using IP address instead of DHCP:
     Ethernet.begin(mac, ip);
     // give the Ethernet shield a second to initialize:
-    delay(1000);
+    delay(500);
   }
   
   if (client.connect(server, 80)) {
     
     client.println("POST /postdata HTTP/1.1");
-    client.println("Host:  xxxxxxxxx.herokuapp.com");
+    client.println("Host:  xxxxx.herokuapp.com");
     client.println("User-Agent: Arduino/1.0");
     client.println("Connection: close");
     client.println("Content-Type: application/x-www-form-urlencoded;");
