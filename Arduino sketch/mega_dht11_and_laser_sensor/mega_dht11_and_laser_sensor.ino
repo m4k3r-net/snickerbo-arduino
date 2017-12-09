@@ -8,7 +8,7 @@
 #define DHTTYPE DHT11
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-char server[] = "xxxxxxx.herokuapp.com";
+char server[] = "xxxxxx.herokuapp.com";
 static char tempstr1[15];
 static char humstr1[15];
 static char tempstr2[15];
@@ -17,8 +17,9 @@ static char humstr2[15];
 // Set the static IP address to use if the DHCP fails to assign
 IPAddress ip(192,168,1,11);
 EthernetClient client;
-unsigned long postDHTTimer;
+unsigned long postTimer;
 int laserPin = 7;
+int laser = 0;
 boolean laserIsBlocked;
 DHT dht1(DHTPIN1, DHTTYPE);
 DHT dht2(DHTPIN2, DHTTYPE);
@@ -30,29 +31,18 @@ void setup() {
 
 void loop() {
   
-  if(millis()-postDHTTimer >= 10000UL) {
-    postDHTTimer = millis();
-    postDHTData();
+  if(millis()-postTimer >= 3000UL) {
+    postTimer = millis();
+    postData();
   }
 
-  if( digitalRead(laserPin) == LOW) {
-    if( !laserIsBlocked ) {
-      laserIsBlocked = true;
-      Serial.write('s');
-      delay(100);
-      Serial.write('25511898');
-      delay(100);
-      Serial.write('CATSCAN!');
-      postLaserTriggered();
-      delay(800);
-    }    
-  } else {
-    laserIsBlocked = false;
+  if( digitalRead(laserPin) == LOW && laser == 0) {
+   laser = 1;
   }
   
 }
 
-void postDHTData() {
+void postData() {
     
     dtostrf(dht1.readTemperature(),5, 1, tempstr1);
     dtostrf(dht1.readHumidity(),5, 1, humstr1);
@@ -60,7 +50,6 @@ void postDHTData() {
     dtostrf(dht2.readHumidity(),5, 1, humstr2);
     
     String PostData="macaddr=testaddr";
-    PostData=PostData+"&sensor=DHT";
     PostData=PostData+"&temperature1=";
     PostData=PostData+tempstr1;
     PostData=PostData+"&humidity1=";
@@ -69,14 +58,18 @@ void postDHTData() {
     PostData=PostData+tempstr2;
     PostData=PostData+"&humidity2=";
     PostData=PostData+humstr2;
+    PostData=PostData+"&laser=";
+    PostData=PostData+laser;
     httpPostClient(PostData);
 
 }
 
-void postLaserTriggered() {
-    String PostData="macaddr=testaddr";
-    PostData=PostData+"&sensor=laser_1";
-    httpPostClient(PostData);
+void laserTriggered() {
+    Serial.write('s');
+    delay(50);
+    Serial.write('25511898');
+    delay(50);
+    Serial.write('CATSCAN!');
 }
 
 void httpPostClient(String PostData) {
@@ -91,7 +84,7 @@ void httpPostClient(String PostData) {
   if (client.connect(server, 80)) {
     
     client.println("POST /postdata HTTP/1.1");
-    client.println("Host:  xxxxxxx.herokuapp.com");
+    client.println("Host:  xxxxxx.herokuapp.com");
     client.println("User-Agent: Arduino/1.0");
     client.println("Connection: close");
     client.println("Content-Type: application/x-www-form-urlencoded;");
@@ -113,6 +106,7 @@ void httpPostClient(String PostData) {
   
   client.flush();
   client.stop();
+  laser = 0;
   
   //delay(1000); // 30 min = 1800000 ms
     
